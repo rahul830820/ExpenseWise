@@ -18,6 +18,8 @@ from app.api.reports import router as reports_router
 
 from app.api.incomes import router as incomes_router
 
+from app.api.budgets import router as budgets_router
+
 # Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -32,6 +34,7 @@ app.include_router(expenses_router)
 app.include_router(dashboard_router)
 app.include_router(reports_router)
 app.include_router(incomes_router)
+app.include_router(budgets_router)
 
 
 @app.get("/")
