@@ -33,3 +33,9 @@ class BudgetAnalysis(BaseModel):
     remaining: float
 
     status: str
+
+class BudgetUpdate(BaseModel):
+
+    amount: float = Field(
+        gt=0
+    )

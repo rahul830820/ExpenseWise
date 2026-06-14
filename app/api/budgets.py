@@ -32,6 +32,20 @@ from app.services.budget_service import (
     get_budget_analysis
 )
 
+from app.schemas.budget import (
+    BudgetCreate,
+    BudgetResponse,
+    BudgetAnalysis,
+    BudgetUpdate
+)
+
+from app.services.budget_service import (
+    create_budget,
+    get_budgets,
+    get_budget_analysis,
+    update_budget,
+    delete_budget
+)
 
 @router.post(
     "",
@@ -74,5 +88,36 @@ def budget_analysis(
 ):
     return get_budget_analysis(
         db=db,
+        current_user=current_user
+    )
+
+@router.put(
+    "/{budget_id}",
+    response_model=BudgetResponse
+)
+def update_existing_budget(
+    budget_id: int,
+    budget_data: BudgetUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    return update_budget(
+        db=db,
+        budget_id=budget_id,
+        amount=budget_data.amount,
+        current_user=current_user
+    )
+
+@router.delete(
+    "/{budget_id}"
+)
+def delete_existing_budget(
+    budget_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    return delete_budget(
+        db=db,
+        budget_id=budget_id,
         current_user=current_user
     )

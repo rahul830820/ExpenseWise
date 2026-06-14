@@ -122,3 +122,61 @@ def get_budget_analysis(
         )
 
     return results
+
+def update_budget(
+    db: Session,
+    budget_id: int,
+    amount: float,
+    current_user: User
+):
+
+    budget = (
+        db.query(Budget)
+        .filter(
+            Budget.id == budget_id,
+            Budget.user_id == current_user.id
+        )
+        .first()
+    )
+
+    if not budget:
+        raise HTTPException(
+            status_code=404,
+            detail="Budget not found"
+        )
+
+    budget.amount = amount
+
+    db.commit()
+    db.refresh(budget)
+
+    return budget
+
+
+def delete_budget(
+    db: Session,
+    budget_id: int,
+    current_user: User
+):
+
+    budget = (
+        db.query(Budget)
+        .filter(
+            Budget.id == budget_id,
+            Budget.user_id == current_user.id
+        )
+        .first()
+    )
+
+    if not budget:
+        raise HTTPException(
+            status_code=404,
+            detail="Budget not found"
+        )
+
+    db.delete(budget)
+    db.commit()
+
+    return {
+        "message": "Budget deleted successfully"
+    }
