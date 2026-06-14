@@ -57,3 +57,81 @@ def get_expenses(
         )
         .all()
     )
+
+def update_expense(
+    db: Session,
+    expense_id: int,
+    amount: float,
+    description: str,
+    expense_date,
+    category_id: int,
+    current_user: User
+):
+
+    expense = (
+        db.query(Expense)
+        .filter(
+            Expense.id == expense_id,
+            Expense.user_id == current_user.id
+        )
+        .first()
+    )
+
+    if not expense:
+        raise HTTPException(
+            status_code=404,
+            detail="Expense not found"
+        )
+
+    category = (
+        db.query(Category)
+        .filter(
+            Category.id == category_id,
+            Category.user_id == current_user.id
+        )
+        .first()
+    )
+
+    if not category:
+        raise HTTPException(
+            status_code=404,
+            detail="Category not found"
+        )
+
+    expense.amount = amount
+    expense.description = description
+    expense.expense_date = expense_date
+    expense.category_id = category_id
+
+    db.commit()
+    db.refresh(expense)
+
+    return expense
+
+def delete_expense(
+    db: Session,
+    expense_id: int,
+    current_user: User
+):
+
+    expense = (
+        db.query(Expense)
+        .filter(
+            Expense.id == expense_id,
+            Expense.user_id == current_user.id
+        )
+        .first()
+    )
+
+    if not expense:
+        raise HTTPException(
+            status_code=404,
+            detail="Expense not found"
+        )
+
+    db.delete(expense)
+    db.commit()
+
+    return {
+        "message": "Expense deleted successfully"
+    }
