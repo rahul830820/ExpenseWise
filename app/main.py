@@ -10,6 +10,8 @@ from app.models.category import Category
 
 from app.api.categories import router as categories_router
 
+from app.api.expenses import router as expenses_router
+
 
 # Base.metadata.create_all(bind=engine)
 
@@ -21,6 +23,7 @@ app = FastAPI(
 app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(categories_router)
+app.include_router(expenses_router)
 
 @app.get("/")
 def health_check():

@@ -12,6 +12,13 @@ from app.schemas.category import (
 
 from app.services.category_service import (
     create_category,
+    get_categories,
+    update_category,
+    delete_category
+)
+
+from app.services.category_service import (
+    create_category,
     get_categories
 )
 
@@ -48,5 +55,37 @@ def get_all_categories(
 ):
     return get_categories(
         db=db,
+        current_user=current_user
+    )
+
+
+@router.put(
+    "/{category_id}",
+    response_model=CategoryResponse
+)
+def update_existing_category(
+    category_id: int,
+    category_data: CategoryCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    return update_category(
+        db=db,
+        category_id=category_id,
+        name=category_data.name,
+        current_user=current_user
+    )
+
+@router.delete(
+    "/{category_id}"
+)
+def delete_existing_category(
+    category_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    return delete_category(
+        db=db,
+        category_id=category_id,
         current_user=current_user
     )
