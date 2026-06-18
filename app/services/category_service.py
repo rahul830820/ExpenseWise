@@ -17,9 +17,33 @@ def create_category(db: Session, name: str, current_user: User):
     return category
 
 
-def get_categories(db: Session, current_user: User):
+def get_categories(
+    db: Session,
+    user_id: int,
+    page: int = 1,
+    limit: int = 20,
+):
+    offset = (page - 1) * limit
 
-    return db.query(Category).filter(Category.user_id == current_user.id).all()
+    query = db.query(Category).filter(
+        Category.user_id == user_id
+    )
+
+    total = query.count()
+
+    categories = (
+        query
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    return {
+        "items": categories,
+        "total": total,
+        "page": page,
+        "limit": limit,
+    }
 
 
 def update_category(db: Session, category_id: int, name: str, current_user: User):

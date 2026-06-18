@@ -1,15 +1,15 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.models.user import User
 from app.core.dependencies import get_current_user
-
+from app.schemas.pagination import PaginatedResponse
 from app.schemas.category import CategoryCreate, CategoryResponse
 
 from app.services.category_service import (
     create_category,
-    get_categories,
+    get_categories  as get_categories_service,
     update_category,
     delete_category,
 )
@@ -26,11 +26,22 @@ def create_new_category(
     return create_category(db=db, name=category_data.name, current_user=current_user)
 
 
-@router.get("", response_model=list[CategoryResponse])
-def get_all_categories(
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+@router.get(
+    "",
+    response_model=PaginatedResponse[CategoryResponse]
+)
+def read_categories(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
-    return get_categories(db=db, current_user=current_user)
+    return get_categories_service(
+        db=db,
+        user_id=current_user.id,
+        page=page,
+        limit=limit,
+    )
 
 
 @router.put("/{category_id}", response_model=CategoryResponse)

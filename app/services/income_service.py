@@ -19,6 +19,30 @@ def create_income(
     return income
 
 
-def get_incomes(db: Session, current_user: User):
+def get_incomes(
+    db: Session,
+    user_id: int,
+    page: int = 1,
+    limit: int = 20,
+):
+    offset = (page - 1) * limit
 
-    return db.query(Income).filter(Income.user_id == current_user.id).all()
+    query = db.query(Income).filter(
+        Income.user_id == user_id
+    )
+
+    total = query.count()
+
+    incomes = (
+        query
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    return {
+        "items": incomes,
+        "total": total,
+        "page": page,
+        "limit": limit,
+    }

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
@@ -6,10 +6,10 @@ from app.models.user import User
 from app.core.dependencies import get_current_user
 
 from app.schemas.expense import ExpenseCreate, ExpenseResponse
-
+from app.schemas.pagination import PaginatedResponse
 from app.services.expense_service import (
     create_expense,
-    get_expenses,
+    get_expenses as get_expenses_service,
     update_expense,
     delete_expense,
 )
@@ -33,11 +33,22 @@ def create_new_expense(
     )
 
 
-@router.get("", response_model=list[ExpenseResponse])
-def get_all_expenses(
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+@router.get(
+    "",
+    response_model=PaginatedResponse[ExpenseResponse]
+)
+def get_expenses(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
-    return get_expenses(db=db, current_user=current_user)
+    return get_expenses_service(
+    db=db,
+    user_id=current_user.id,
+    page=page,
+    limit=limit,
+)
 
 
 @router.put("/{expense_id}", response_model=ExpenseResponse)

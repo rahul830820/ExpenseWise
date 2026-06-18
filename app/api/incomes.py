@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
@@ -7,7 +7,14 @@ from app.core.dependencies import get_current_user
 
 from app.schemas.income import IncomeCreate, IncomeResponse
 
-from app.services.income_service import create_income, get_incomes
+from app.schemas.pagination import PaginatedResponse
+from app.schemas.income import IncomeResponse
+
+from app.services.income_service import (
+    create_income,
+    get_incomes as get_incomes_service,
+)
+from app.schemas.pagination import PaginatedResponse
 
 router = APIRouter(prefix="/incomes", tags=["Incomes"])
 
@@ -27,8 +34,19 @@ def create_new_income(
     )
 
 
-@router.get("", response_model=list[IncomeResponse])
-def get_all_incomes(
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+@router.get(
+    "",
+    response_model=PaginatedResponse[IncomeResponse]
+)
+def get_incomes(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
-    return get_incomes(db=db, current_user=current_user)
+    return get_incomes_service(
+        db=db,
+        user_id=current_user.id,
+        page=page,
+        limit=limit,
+    )

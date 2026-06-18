@@ -39,9 +39,33 @@ def create_expense(
     return expense
 
 
-def get_expenses(db: Session, current_user: User):
+def get_expenses(
+    db: Session,
+    user_id: int,
+    page: int = 1,
+    limit: int = 20,
+):
+    offset = (page - 1) * limit
 
-    return db.query(Expense).filter(Expense.user_id == current_user.id).all()
+    query = db.query(Expense).filter(
+        Expense.user_id == user_id
+    )
+
+    total = query.count()
+
+    expenses = (
+        query
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    return {
+        "items": expenses,
+        "total": total,
+        "page": page,
+        "limit": limit,
+    }
 
 
 def update_expense(
