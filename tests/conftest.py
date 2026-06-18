@@ -7,19 +7,13 @@ from sqlalchemy.orm import sessionmaker
 from app.db.database import Base, get_db
 from app.main import app
 
-
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False}
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
 
-TestingSessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 @pytest.fixture(scope="function")
@@ -43,35 +37,29 @@ def client():
 
     app.dependency_overrides.clear()
 
+
 @pytest.fixture
 def test_user(client):
 
     user_data = {
         "full_name": "Test User",
         "email": "test@example.com",
-        "password": "password123"
+        "password": "password123",
     }
 
-    client.post(
-        "/auth/register",
-        json=user_data
-    )
+    client.post("/auth/register", json=user_data)
 
     return user_data
+
 
 @pytest.fixture
 def auth_headers(client, test_user):
 
     response = client.post(
         "/auth/login",
-        data={
-            "username": test_user["email"],
-            "password": test_user["password"]
-        }
+        data={"username": test_user["email"], "password": test_user["password"]},
     )
 
     token = response.json()["access_token"]
 
-    return {
-        "Authorization": f"Bearer {token}"
-    }
+    return {"Authorization": f"Bearer {token}"}

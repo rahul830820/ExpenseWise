@@ -5,14 +5,9 @@ from pydantic import BaseModel, Field
 
 class IncomeCreate(BaseModel):
 
-    amount: float = Field(
-        gt=0
-    )
+    amount: float = Field(gt=0)
 
-    source: str = Field(
-        min_length=2,
-        max_length=255
-    )
+    source: str = Field(min_length=2, max_length=255)
 
     income_date: date
 

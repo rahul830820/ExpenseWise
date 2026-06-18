@@ -1,12 +1,8 @@
 from fastapi import FastAPI
 
 from app.core.config import settings
-from app.db.database import Base, engine
 from app.api.auth import router as auth_router
 from app.api.users import router as users_router
-
-from app.models.user import User
-from app.models.category import Category
 
 from app.api.categories import router as categories_router
 
@@ -20,12 +16,7 @@ from app.api.incomes import router as incomes_router
 
 from app.api.budgets import router as budgets_router
 
-# Base.metadata.create_all(bind=engine)
-
-app = FastAPI(
-    title=settings.PROJECT_NAME,
-    version=settings.PROJECT_VERSION
-)
+app = FastAPI(title=settings.PROJECT_NAME, version=settings.PROJECT_VERSION)
 
 app.include_router(auth_router)
 app.include_router(users_router)
@@ -39,7 +30,4 @@ app.include_router(budgets_router)
 
 @app.get("/")
 def health_check():
-    return {
-        "status": "success",
-        "message": "ExpenseWise API Running"
-    }
+    return {"status": "success", "message": "ExpenseWise API Running"}

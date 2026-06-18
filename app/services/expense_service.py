@@ -12,30 +12,24 @@ def create_expense(
     description: str,
     expense_date,
     category_id: int,
-    current_user: User
+    current_user: User,
 ):
 
     category = (
         db.query(Category)
-        .filter(
-            Category.id == category_id,
-            Category.user_id == current_user.id
-        )
+        .filter(Category.id == category_id, Category.user_id == current_user.id)
         .first()
     )
 
     if not category:
-        raise HTTPException(
-            status_code=404,
-            detail="Category not found"
-        )
+        raise HTTPException(status_code=404, detail="Category not found")
 
     expense = Expense(
         amount=amount,
         description=description,
         expense_date=expense_date,
         category_id=category_id,
-        user_id=current_user.id
+        user_id=current_user.id,
     )
 
     db.add(expense)
@@ -45,18 +39,10 @@ def create_expense(
     return expense
 
 
-def get_expenses(
-    db: Session,
-    current_user: User
-):
+def get_expenses(db: Session, current_user: User):
 
-    return (
-        db.query(Expense)
-        .filter(
-            Expense.user_id == current_user.id
-        )
-        .all()
-    )
+    return db.query(Expense).filter(Expense.user_id == current_user.id).all()
+
 
 def update_expense(
     db: Session,
@@ -65,38 +51,26 @@ def update_expense(
     description: str,
     expense_date,
     category_id: int,
-    current_user: User
+    current_user: User,
 ):
 
     expense = (
         db.query(Expense)
-        .filter(
-            Expense.id == expense_id,
-            Expense.user_id == current_user.id
-        )
+        .filter(Expense.id == expense_id, Expense.user_id == current_user.id)
         .first()
     )
 
     if not expense:
-        raise HTTPException(
-            status_code=404,
-            detail="Expense not found"
-        )
+        raise HTTPException(status_code=404, detail="Expense not found")
 
     category = (
         db.query(Category)
-        .filter(
-            Category.id == category_id,
-            Category.user_id == current_user.id
-        )
+        .filter(Category.id == category_id, Category.user_id == current_user.id)
         .first()
     )
 
     if not category:
-        raise HTTPException(
-            status_code=404,
-            detail="Category not found"
-        )
+        raise HTTPException(status_code=404, detail="Category not found")
 
     expense.amount = amount
     expense.description = description
@@ -108,30 +82,19 @@ def update_expense(
 
     return expense
 
-def delete_expense(
-    db: Session,
-    expense_id: int,
-    current_user: User
-):
+
+def delete_expense(db: Session, expense_id: int, current_user: User):
 
     expense = (
         db.query(Expense)
-        .filter(
-            Expense.id == expense_id,
-            Expense.user_id == current_user.id
-        )
+        .filter(Expense.id == expense_id, Expense.user_id == current_user.id)
         .first()
     )
 
     if not expense:
-        raise HTTPException(
-            status_code=404,
-            detail="Expense not found"
-        )
+        raise HTTPException(status_code=404, detail="Expense not found")
 
     db.delete(expense)
     db.commit()
 
-    return {
-        "message": "Expense deleted successfully"
-    }
+    return {"message": "Expense deleted successfully"}

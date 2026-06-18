@@ -7,24 +7,10 @@ from app.db.database import Base
 class Category(Base):
     __tablename__ = "categories"
 
-    id = Column(
-        Integer,
-        primary_key=True,
-        index=True
-    )
+    id = Column(Integer, primary_key=True, index=True)
 
-    name = Column(
-        String(100),
-        nullable=False
-    )
+    name = Column(String(100), nullable=False)
 
-    user_id = Column(
-        Integer,
-        ForeignKey("users.id"),
-        nullable=False
-    )
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    user = relationship(
-        "User",
-        backref="categories"
-    )
+    user = relationship("User", backref="categories")

@@ -1,9 +1,7 @@
 def test_category_wise_report(client, auth_headers):
 
     category_response = client.post(
-        "/categories",
-        json={"name": "Food"},
-        headers=auth_headers
+        "/categories", json={"name": "Food"}, headers=auth_headers
     )
 
     category_id = category_response.json()["id"]
@@ -14,15 +12,12 @@ def test_category_wise_report(client, auth_headers):
             "amount": 1000,
             "description": "Lunch",
             "expense_date": "2026-06-15",
-            "category_id": category_id
+            "category_id": category_id,
         },
-        headers=auth_headers
+        headers=auth_headers,
     )
 
-    response = client.get(
-        "/reports/category-wise",
-        headers=auth_headers
-    )
+    response = client.get("/reports/category-wise", headers=auth_headers)
 
     assert response.status_code == 200
 
@@ -32,12 +27,11 @@ def test_category_wise_report(client, auth_headers):
     assert data[0]["category"] == "Food"
     assert data[0]["total"] == 1000
 
+
 def test_monthly_report(client, auth_headers):
 
     category_response = client.post(
-        "/categories",
-        json={"name": "Food"},
-        headers=auth_headers
+        "/categories", json={"name": "Food"}, headers=auth_headers
     )
 
     category_id = category_response.json()["id"]
@@ -48,15 +42,12 @@ def test_monthly_report(client, auth_headers):
             "amount": 1000,
             "description": "Lunch",
             "expense_date": "2026-06-15",
-            "category_id": category_id
+            "category_id": category_id,
         },
-        headers=auth_headers
+        headers=auth_headers,
     )
 
-    response = client.get(
-        "/reports/monthly",
-        headers=auth_headers
-    )
+    response = client.get("/reports/monthly", headers=auth_headers)
 
     assert response.status_code == 200
 

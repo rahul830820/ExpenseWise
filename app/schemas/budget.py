@@ -3,9 +3,7 @@ from pydantic import BaseModel, Field
 
 class BudgetCreate(BaseModel):
 
-    amount: float = Field(
-        gt=0
-    )
+    amount: float = Field(gt=0)
 
     category_id: int
 
@@ -34,8 +32,7 @@ class BudgetAnalysis(BaseModel):
 
     status: str
 
+
 class BudgetUpdate(BaseModel):
 
-    amount: float = Field(
-        gt=0
-    )
+    amount: float = Field(gt=0)

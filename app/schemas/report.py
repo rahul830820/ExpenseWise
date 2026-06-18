@@ -10,6 +10,7 @@ class MonthlyReport(BaseModel):
     month: str
     total: float
 
+
 class TopCategoryReport(BaseModel):
     category: str
     total: float

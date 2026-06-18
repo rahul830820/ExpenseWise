@@ -1,11 +1,7 @@
 def test_create_expense(client, auth_headers):
 
     category_response = client.post(
-        "/categories",
-        json={
-            "name": "Food"
-        },
-        headers=auth_headers
+        "/categories", json={"name": "Food"}, headers=auth_headers
     )
 
     category_id = category_response.json()["id"]
@@ -16,9 +12,9 @@ def test_create_expense(client, auth_headers):
             "amount": 500,
             "description": "Lunch",
             "expense_date": "2026-06-15",
-            "category_id": category_id
+            "category_id": category_id,
         },
-        headers=auth_headers
+        headers=auth_headers,
     )
 
     assert response.status_code == 201

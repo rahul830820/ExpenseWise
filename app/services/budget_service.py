@@ -9,48 +9,30 @@ from sqlalchemy import func
 
 from app.models.expense import Expense
 
-def create_budget(
-    db: Session,
-    amount: float,
-    category_id: int,
-    current_user: User
-):
+
+def create_budget(db: Session, amount: float, category_id: int, current_user: User):
 
     category = (
         db.query(Category)
-        .filter(
-            Category.id == category_id,
-            Category.user_id == current_user.id
-        )
+        .filter(Category.id == category_id, Category.user_id == current_user.id)
         .first()
     )
 
     if not category:
-        raise HTTPException(
-            status_code=404,
-            detail="Category not found"
-        )
+        raise HTTPException(status_code=404, detail="Category not found")
 
     existing_budget = (
         db.query(Budget)
-        .filter(
-            Budget.category_id == category_id,
-            Budget.user_id == current_user.id
-        )
+        .filter(Budget.category_id == category_id, Budget.user_id == current_user.id)
         .first()
     )
 
     if existing_budget:
         raise HTTPException(
-            status_code=400,
-            detail="Budget already exists for this category"
+            status_code=400, detail="Budget already exists for this category"
         )
 
-    budget = Budget(
-        amount=amount,
-        category_id=category_id,
-        user_id=current_user.id
-    )
+    budget = Budget(amount=amount, category_id=category_id, user_id=current_user.id)
 
     db.add(budget)
     db.commit()
@@ -59,57 +41,31 @@ def create_budget(
     return budget
 
 
-def get_budgets(
-    db: Session,
-    current_user: User
-):
+def get_budgets(db: Session, current_user: User):
 
-    return (
-        db.query(Budget)
-        .filter(
-            Budget.user_id == current_user.id
-        )
-        .all()
-    )
+    return db.query(Budget).filter(Budget.user_id == current_user.id).all()
 
-def get_budget_analysis(
-    db: Session,
-    current_user: User
-):
 
-    budgets = (
-        db.query(Budget)
-        .filter(
-            Budget.user_id == current_user.id
-        )
-        .all()
-    )
+def get_budget_analysis(db: Session, current_user: User):
+
+    budgets = db.query(Budget).filter(Budget.user_id == current_user.id).all()
 
     results = []
 
     for budget in budgets:
 
         spent = (
-            db.query(
-                func.coalesce(
-                    func.sum(Expense.amount),
-                    0
-                )
-            )
+            db.query(func.coalesce(func.sum(Expense.amount), 0))
             .filter(
                 Expense.category_id == budget.category_id,
-                Expense.user_id == current_user.id
+                Expense.user_id == current_user.id,
             )
             .scalar()
         )
 
         remaining = budget.amount - spent
 
-        status = (
-            "Within Budget"
-            if remaining >= 0
-            else "Over Budget"
-        )
+        status = "Within Budget" if remaining >= 0 else "Over Budget"
 
         results.append(
             {
@@ -117,33 +73,23 @@ def get_budget_analysis(
                 "budget": budget.amount,
                 "spent": spent,
                 "remaining": remaining,
-                "status": status
+                "status": status,
             }
         )
 
     return results
 
-def update_budget(
-    db: Session,
-    budget_id: int,
-    amount: float,
-    current_user: User
-):
+
+def update_budget(db: Session, budget_id: int, amount: float, current_user: User):
 
     budget = (
         db.query(Budget)
-        .filter(
-            Budget.id == budget_id,
-            Budget.user_id == current_user.id
-        )
+        .filter(Budget.id == budget_id, Budget.user_id == current_user.id)
         .first()
     )
 
     if not budget:
-        raise HTTPException(
-            status_code=404,
-            detail="Budget not found"
-        )
+        raise HTTPException(status_code=404, detail="Budget not found")
 
     budget.amount = amount
 
@@ -153,30 +99,18 @@ def update_budget(
     return budget
 
 
-def delete_budget(
-    db: Session,
-    budget_id: int,
-    current_user: User
-):
+def delete_budget(db: Session, budget_id: int, current_user: User):
 
     budget = (
         db.query(Budget)
-        .filter(
-            Budget.id == budget_id,
-            Budget.user_id == current_user.id
-        )
+        .filter(Budget.id == budget_id, Budget.user_id == current_user.id)
         .first()
     )
 
     if not budget:
-        raise HTTPException(
-            status_code=404,
-            detail="Budget not found"
-        )
+        raise HTTPException(status_code=404, detail="Budget not found")
 
     db.delete(budget)
     db.commit()
 
-    return {
-        "message": "Budget deleted successfully"
-    }
+    return {"message": "Budget deleted successfully"}

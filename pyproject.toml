@@ -1,0 +1,7 @@
+[tool.ruff]
+exclude = [
+    "alembic/versions",
+]
+[tool.black]
+line-length = 88
+

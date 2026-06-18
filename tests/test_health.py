@@ -1,5 +1,3 @@
-from tests.conftest import client
-
 def test_health_check(client):
     response = client.get("/")
 
@@ -7,5 +5,5 @@ def test_health_check(client):
 
     assert response.json() == {
         "status": "success",
-        "message": "ExpenseWise API Running"
+        "message": "ExpenseWise API Running",
     }

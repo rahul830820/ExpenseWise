@@ -1,5 +1,3 @@
-from tests.conftest import client
-
 def test_register_user(client):
 
     response = client.post(
@@ -7,8 +5,8 @@ def test_register_user(client):
         json={
             "full_name": "Test User",
             "email": "test4@example.com",
-            "password": "password123"
-        }
+            "password": "password123",
+        },
     )
 
     assert response.status_code == 201
@@ -26,16 +24,12 @@ def test_login_user(client):
         json={
             "full_name": "Test User",
             "email": "test@example.com",
-            "password": "password123"
-        }
+            "password": "password123",
+        },
     )
 
     response = client.post(
-        "/auth/login",
-        data={
-            "username": "test@example.com",
-            "password": "password123"
-        }
+        "/auth/login", data={"username": "test@example.com", "password": "password123"}
     )
 
     assert response.status_code == 200
