@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: expensewise
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+
+    container_name: expensewise-api
+
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+    env_file:
+      - .env.docker
+
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
