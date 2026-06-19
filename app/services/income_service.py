@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 
 from app.models.income import Income
 from app.models.user import User
+from datetime import date
+from typing import Optional
 
 
 def create_income(
@@ -24,12 +26,24 @@ def get_incomes(
     user_id: int,
     page: int = 1,
     limit: int = 20,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
 ):
     offset = (page - 1) * limit
 
     query = db.query(Income).filter(
         Income.user_id == user_id
     )
+
+    if start_date:
+        query = query.filter(
+            Income.income_date >= start_date
+        )
+
+    if end_date:
+        query = query.filter(
+            Income.income_date <= end_date
+        )
 
     total = query.count()
 

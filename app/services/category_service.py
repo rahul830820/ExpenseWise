@@ -4,7 +4,7 @@ from app.models.category import Category
 from app.models.user import User
 
 from fastapi import HTTPException
-
+from typing import Optional
 
 def create_category(db: Session, name: str, current_user: User):
 
@@ -22,12 +22,18 @@ def get_categories(
     user_id: int,
     page: int = 1,
     limit: int = 20,
+    search: Optional[str] = None,
 ):
     offset = (page - 1) * limit
 
     query = db.query(Category).filter(
         Category.user_id == user_id
     )
+
+    if search:
+        query = query.filter(
+            Category.name.ilike(f"%{search}%")
+        )
 
     total = query.count()
 
@@ -44,7 +50,6 @@ def get_categories(
         "page": page,
         "limit": limit,
     }
-
 
 def update_category(db: Session, category_id: int, name: str, current_user: User):
 
