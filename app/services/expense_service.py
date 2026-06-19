@@ -4,7 +4,8 @@ from fastapi import HTTPException
 from app.models.expense import Expense
 from app.models.category import Category
 from app.models.user import User
-
+from datetime import date
+from typing import Optional
 
 def create_expense(
     db: Session,
@@ -44,13 +45,31 @@ def get_expenses(
     user_id: int,
     page: int = 1,
     limit: int = 20,
+    category_id: Optional[int] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
 ):
     offset = (page - 1) * limit
 
     query = db.query(Expense).filter(
-        Expense.user_id == user_id
-    )
+    Expense.user_id == user_id
+)
 
+    if category_id:
+        query = query.filter(
+            Expense.category_id == category_id
+        )
+
+    if start_date:
+        query = query.filter(
+            Expense.expense_date >= start_date
+        )
+
+    if end_date:
+        query = query.filter(
+            Expense.expense_date <= end_date
+    )
+        
     total = query.count()
 
     expenses = (
