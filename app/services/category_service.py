@@ -23,6 +23,8 @@ def get_categories(
     page: int = 1,
     limit: int = 20,
     search: Optional[str] = None,
+    sort_by: Optional[str] = None,
+    order: str = "asc",
 ):
     offset = (page - 1) * limit
 
@@ -35,6 +37,11 @@ def get_categories(
             Category.name.ilike(f"%{search}%")
         )
 
+    if sort_by == "name":
+        if order == "desc":
+            query = query.order_by(Category.name.desc())
+        else:
+            query = query.order_by(Category.name.asc())
     total = query.count()
 
     categories = (
