@@ -28,6 +28,8 @@ def get_incomes(
     limit: int = 20,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
+    sort_by: Optional[str] = None,
+    order: str = "desc",
 ):
     offset = (page - 1) * limit
 
@@ -44,6 +46,18 @@ def get_incomes(
         query = query.filter(
             Income.income_date <= end_date
         )
+
+    if sort_by == "amount":
+        if order == "asc":
+            query = query.order_by(Income.amount.asc())
+        else:
+            query = query.order_by(Income.amount.desc())
+
+    elif sort_by == "income_date":
+        if order == "asc":
+            query = query.order_by(Income.income_date.asc())
+        else:
+            query = query.order_by(Income.income_date.desc())
 
     total = query.count()
 
