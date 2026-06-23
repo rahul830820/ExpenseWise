@@ -45,6 +45,8 @@ def get_expenses(
     category_id: Optional[int] = Query(None),
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
+    sort_by: Optional[str] = Query(None),
+    order: str = Query("desc"),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -56,6 +58,8 @@ def get_expenses(
         category_id=category_id,
         start_date=start_date,
         end_date=end_date,
+        sort_by=sort_by,
+        order=order,
     )
 
 

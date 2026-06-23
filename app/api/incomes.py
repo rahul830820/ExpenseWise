@@ -45,6 +45,8 @@ def get_incomes(
     limit: int = Query(20, ge=1, le=100),
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
+    sort_by: Optional[str] = Query(None),
+    order: str = Query("desc"),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -55,4 +57,6 @@ def get_incomes(
         limit=limit,
         start_date=start_date,
         end_date=end_date,
+        sort_by=sort_by,
+        order=order,
     )

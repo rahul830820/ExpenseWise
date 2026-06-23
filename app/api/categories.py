@@ -37,6 +37,8 @@ def read_categories(
     search: Optional[str] = Query(None),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
+    sort_by: Optional[str] = Query(None),
+    order: str = Query("asc"),
 ):
     return get_categories_service(
         db=db,
@@ -44,6 +46,8 @@ def read_categories(
         page=page,
         limit=limit,
         search=search,
+        sort_by=sort_by,
+        order=order,
     )
 
 
