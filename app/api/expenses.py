@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
@@ -7,6 +7,7 @@ from app.core.dependencies import get_current_user
 
 from app.schemas.expense import ExpenseCreate, ExpenseResponse
 from app.schemas.pagination import PaginatedResponse
+from typing import Literal, Optional
 from app.services.expense_service import (
     create_expense,
     get_expenses as get_expenses_service,
@@ -45,11 +46,20 @@ def get_expenses(
     category_id: Optional[int] = Query(None),
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
-    sort_by: Optional[str] = Query(None),
-    order: str = Query("desc"),
+    sort_by: Optional[Literal["amount", "expense_date"]] = Query(None),
+    order: Literal["asc", "desc"] = Query("desc"),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    if (
+        start_date
+        and end_date
+        and start_date > end_date
+        ):
+        raise HTTPException(
+            status_code=400,
+            detail="start_date cannot be after end_date",
+        )
     return get_expenses_service(
         db=db,
         user_id=current_user.id,

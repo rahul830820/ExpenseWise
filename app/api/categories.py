@@ -6,7 +6,7 @@ from app.models.user import User
 from app.core.dependencies import get_current_user
 from app.schemas.pagination import PaginatedResponse
 from app.schemas.category import CategoryCreate, CategoryResponse
-
+from typing import Literal, Optional
 from app.services.category_service import (
     create_category,
     get_categories  as get_categories_service,
@@ -37,8 +37,10 @@ def read_categories(
     search: Optional[str] = Query(None),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
-    sort_by: Optional[str] = Query(None),
-    order: str = Query("asc"),
+    sort_by: Optional[
+    Literal["name"]
+    ] = Query(None),
+    order: Literal["asc", "desc"] = Query("asc"),
 ):
     return get_categories_service(
         db=db,
