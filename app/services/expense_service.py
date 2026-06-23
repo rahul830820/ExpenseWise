@@ -48,6 +48,8 @@ def get_expenses(
     category_id: Optional[int] = None,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
+    sort_by: Optional[str] = None,
+    order: str = "desc",
 ):
     offset = (page - 1) * limit
 
@@ -69,7 +71,19 @@ def get_expenses(
         query = query.filter(
             Expense.expense_date <= end_date
     )
-        
+    
+    if sort_by == "amount":
+        if order == "asc":
+            query = query.order_by(Expense.amount.asc())
+        else:
+            query = query.order_by(Expense.amount.desc())
+
+    elif sort_by == "expense_date":
+        if order == "asc":
+            query = query.order_by(Expense.expense_date.asc())
+        else:
+            query = query.order_by(Expense.expense_date.desc())
+
     total = query.count()
 
     expenses = (
