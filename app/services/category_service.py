@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-
+from sqlalchemy.exc import IntegrityError
 from app.models.category import Category
 from app.models.user import User
 
@@ -88,7 +88,21 @@ def delete_category(db: Session, category_id: int, current_user: User):
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
 
-    db.delete(category)
-    db.commit()
+    try:
+        db.delete(category)
+        db.commit()
 
-    return {"message": "Category deleted successfully"}
+        return {
+            "message": "Category deleted successfully"
+        }
+
+    except IntegrityError:
+        db.rollback()
+
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Cannot delete category because "
+                "expenses are linked to it"
+            ),
+        )
