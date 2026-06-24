@@ -5,14 +5,20 @@ from app.db.database import get_db
 from app.models.user import User
 from app.core.dependencies import get_current_user
 
-from app.schemas.income import IncomeCreate, IncomeResponse
+from app.schemas.income import (
+    IncomeCreate,
+    IncomeUpdate,
+    IncomeResponse,
+)
 
 from app.schemas.pagination import PaginatedResponse
-from app.schemas.income import IncomeResponse
+
 
 from app.services.income_service import (
     create_income,
     get_incomes as get_incomes_service,
+    update_income,
+    delete_income,
 )
 from app.schemas.pagination import PaginatedResponse
 from datetime import date
@@ -70,4 +76,33 @@ def get_incomes(
         end_date=end_date,
         sort_by=sort_by,
         order=order,
+    )
+
+@router.put(
+    "/{income_id}",
+    response_model=IncomeResponse,
+)
+def update_existing_income(
+    income_id: int,
+    income_data: IncomeUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return update_income(
+        db=db,
+        income_id=income_id,
+        income_data=income_data,
+        current_user=current_user,
+    )
+
+@router.delete("/{income_id}")
+def delete_existing_income(
+    income_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return delete_income(
+        db=db,
+        income_id=income_id,
+        current_user=current_user,
     )

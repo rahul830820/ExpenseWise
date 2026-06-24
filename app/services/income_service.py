@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.models.income import Income
@@ -73,4 +74,63 @@ def get_incomes(
         "total": total,
         "page": page,
         "limit": limit,
+    }
+
+def update_income(
+    db: Session,
+    income_id: int,
+    income_data,
+    current_user: User,
+):
+
+    income = (
+        db.query(Income)
+        .filter(
+            Income.id == income_id,
+            Income.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not income:
+        raise HTTPException(
+            status_code=404,
+            detail="Income not found",
+        )
+
+    income.amount = income_data.amount
+    income.source = income_data.source
+    income.income_date = income_data.income_date
+
+    db.commit()
+    db.refresh(income)
+
+    return income
+
+def delete_income(
+    db: Session,
+    income_id: int,
+    current_user: User,
+):
+
+    income = (
+        db.query(Income)
+        .filter(
+            Income.id == income_id,
+            Income.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not income:
+        raise HTTPException(
+            status_code=404,
+            detail="Income not found",
+        )
+
+    db.delete(income)
+    db.commit()
+
+    return {
+        "message": "Income deleted successfully"
     }

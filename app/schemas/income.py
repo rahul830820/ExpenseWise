@@ -11,7 +11,14 @@ class IncomeCreate(BaseModel):
 
     income_date: date
 
+class IncomeUpdate(BaseModel):
 
+    amount: float = Field(gt=0)
+
+    source: str = Field(min_length=2, max_length=255)
+
+    income_date: date
+    
 class IncomeResponse(BaseModel):
 
     id: int
