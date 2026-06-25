@@ -98,8 +98,7 @@ def delete_category(db: Session, category_id: int, current_user: User):
 
     except IntegrityError:
         db.rollback()
-
-        raise HTTPException(a
+        raise HTTPException(
             status_code=400,
             detail=(
                 "Cannot delete category because "

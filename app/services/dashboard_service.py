@@ -42,3 +42,21 @@ def get_dashboard_summary(db: Session, current_user: User):
         "expense_count": expense_count,
         "category_count": category_count,
     }
+
+def get_recent_expenses(
+    db: Session,
+    current_user: User,
+    limit: int = 5,
+):
+    return (
+        db.query(Expense)
+        .filter(
+            Expense.user_id == current_user.id
+        )
+        .order_by(
+            Expense.expense_date.desc(),
+            Expense.id.desc()
+        )
+        .limit(limit)
+        .all()
+    )

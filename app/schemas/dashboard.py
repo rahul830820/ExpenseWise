@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from datetime import date
 
 class DashboardSummary(BaseModel):
 
@@ -14,3 +14,16 @@ class DashboardSummary(BaseModel):
     expense_count: int
 
     category_count: int
+
+class RecentExpense(BaseModel):
+
+    id: int
+
+    description: str
+
+    amount: float
+
+    expense_date: date
+
+    class Config:
+        from_attributes = True
