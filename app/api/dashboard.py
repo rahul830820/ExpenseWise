@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.models.user import User
 from app.core.dependencies import get_current_user
-
+from app.schemas.dashboard_period import DashboardPeriod
 from app.schemas.dashboard import (
     DashboardSummary,
     DashboardCharts,
@@ -22,9 +22,15 @@ router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
 @router.get("/summary", response_model=DashboardSummary)
 def dashboard_summary(
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+    period: DashboardPeriod = DashboardPeriod.MONTH,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    return get_dashboard_summary(db=db, current_user=current_user)
+    return get_dashboard_summary(
+    db=db,
+    current_user=current_user,
+    period=period,
+)
 
 @router.get(
     "/recent-expenses",
@@ -44,10 +50,12 @@ def recent_expenses(
     response_model=DashboardCharts,
 )
 def dashboard_charts(
+    period: DashboardPeriod = DashboardPeriod.MONTH,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     return get_dashboard_charts(
         db=db,
         current_user=current_user,
+        period=period,
     )
