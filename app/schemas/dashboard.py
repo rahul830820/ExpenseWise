@@ -27,3 +27,17 @@ class RecentExpense(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ExpenseTrend(BaseModel):
+    month: str
+    total: float
+
+
+class CategoryDistribution(BaseModel):
+    category: str
+    total: float
+
+
+class DashboardCharts(BaseModel):
+    expense_trend: list[ExpenseTrend]
+    category_distribution: list[CategoryDistribution]

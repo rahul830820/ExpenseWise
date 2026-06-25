@@ -1,4 +1,4 @@
-from sqlalchemy import func
+from sqlalchemy import func, extract
 from sqlalchemy.orm import Session
 
 from app.models.expense import Expense
@@ -60,3 +60,47 @@ def get_recent_expenses(
         .limit(limit)
         .all()
     )
+
+def get_dashboard_charts(
+    db: Session,
+    current_user: User,
+):
+    expense_trend = (
+        db.query(
+            func.to_char(
+                Expense.expense_date,
+                "YYYY-MM"
+            ).label("month"),
+            func.sum(Expense.amount).label("total"),
+        )
+        .filter(
+            Expense.user_id == current_user.id
+        )
+        .group_by("month")
+        .order_by("month")
+        .all()
+    )
+
+    category_distribution = (
+        db.query(
+            Category.name.label("category"),
+            func.sum(Expense.amount).label("total"),
+        )
+        .join(
+            Expense,
+            Expense.category_id == Category.id,
+        )
+        .filter(
+            Expense.user_id == current_user.id
+        )
+        .group_by(Category.name)
+        .order_by(
+            func.sum(Expense.amount).desc()
+        )
+        .all()
+    )
+
+    return {
+        "expense_trend": expense_trend,
+        "category_distribution": category_distribution,
+    }

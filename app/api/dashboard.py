@@ -5,11 +5,16 @@ from app.db.database import get_db
 from app.models.user import User
 from app.core.dependencies import get_current_user
 
-from app.schemas.dashboard import DashboardSummary, RecentExpense
+from app.schemas.dashboard import (
+    DashboardSummary,
+    DashboardCharts,
+    RecentExpense,
+)
 
 from app.services.dashboard_service import (
     get_dashboard_summary,
     get_recent_expenses,
+    get_dashboard_charts,
 )
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
@@ -30,6 +35,19 @@ def recent_expenses(
     current_user: User = Depends(get_current_user),
 ):
     return get_recent_expenses(
+        db=db,
+        current_user=current_user,
+    )
+
+@router.get(
+    "/charts",
+    response_model=DashboardCharts,
+)
+def dashboard_charts(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return get_dashboard_charts(
         db=db,
         current_user=current_user,
     )
