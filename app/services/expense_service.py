@@ -45,6 +45,7 @@ def get_expenses(
     user_id: int,
     page: int = 1,
     limit: int = 20,
+    search: Optional[str] = None,
     category_id: Optional[int] = None,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
@@ -60,6 +61,11 @@ def get_expenses(
     if category_id:
         query = query.filter(
             Expense.category_id == category_id
+        )
+
+    if search:
+        query = query.filter(
+            Expense.description.ilike(f"%{search}%")
         )
 
     if start_date:

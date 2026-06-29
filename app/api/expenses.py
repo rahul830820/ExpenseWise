@@ -43,6 +43,7 @@ def create_new_expense(
 def get_expenses(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
+    search: Optional[str] = Query(None),
     category_id: Optional[int] = Query(None),
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
@@ -65,6 +66,7 @@ def get_expenses(
         user_id=current_user.id,
         page=page,
         limit=limit,
+        search=search,
         category_id=category_id,
         start_date=start_date,
         end_date=end_date,
